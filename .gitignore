@@ -1,0 +1,13 @@
+# 個人情報を含むファイル（絶対に公開しない）
+js/mock-data.js
+data/
+PIPELINE.md
+
+# ローカル専用ツール（公開不要）
+migrate.html
+review.html
+js/review.js
+firestore.rules
+
+# システムファイル
+.DS_Store

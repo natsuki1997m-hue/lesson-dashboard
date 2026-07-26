@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>わたしの日本語ページ 🌸</title>
+<link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- パスコード入り口 -->
+<div id="gate" class="gate hidden">
+  <h2>🌸 ようこそ！</h2>
+  <p>パスコードを入れてください<br>Please enter your passcode</p>
+  <input id="passcode-input" type="text" inputmode="numeric" maxlength="6" placeholder="****">
+  <button id="passcode-btn">はいる ➜</button>
+  <div id="gate-error" class="error"></div>
+</div>
+
+<!-- メイン -->
+<div id="main" class="container hidden">
+  <div class="header">
+    <h1>🌸 わたしの日本語ページ</h1>
+    <div class="student-name" id="student-name"></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="lessons">📖 クラスまとめ</button>
+    <button class="tab" data-tab="vocab">📚 単語帳</button>
+    <button class="tab" data-tab="review">🃏 復習</button>
+    <button class="tab" data-tab="homework">📝 宿題</button>
+    <button class="tab" data-tab="progress">🌱 進捗</button>
+    <button class="tab" data-tab="apps">🎮 アプリ</button>
+  </div>
+
+  <div id="tab-lessons" class="tab-content"></div>
+  <div id="tab-vocab" class="tab-content hidden">
+    <div class="vocab-controls">
+      <input id="vocab-search" type="text" placeholder="🔍 ことばを さがす">
+      <select id="vocab-filter">
+        <option value="">ぜんぶ</option>
+        <option value="noun">noun（名詞）</option>
+        <option value="verb">verb（動詞）</option>
+        <option value="i-adjective">i-adjective</option>
+        <option value="na-adjective">na-adjective</option>
+        <option value="adverb">adverb（副詞）</option>
+        <option value="particle">particle（助詞）</option>
+      </select>
+    </div>
+    <div class="vocab-stats" id="vocab-stats"></div>
+    <div id="vocab-list"></div>
+  </div>
+  <div id="tab-review" class="tab-content hidden"></div>
+  <div id="tab-homework" class="tab-content hidden"></div>
+  <div id="tab-progress" class="tab-content hidden"></div>
+  <div id="tab-apps" class="tab-content hidden"></div>
+</div>
+
+<script src="js/firebase-config.js?v=4"></script>
+<script type="module">
+  await import("./js/store.js?v=4");
+  const sid = new URLSearchParams(location.search).get("s") || "caspar-k7x2";
+  await Store.initForStudent(sid);
+  await import("./js/app.js?v=4");
+</script>
+</body>
+</html>

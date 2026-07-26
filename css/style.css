@@ -1,0 +1,333 @@
+/* ===== なつき先生のレッスンダッシュボード：パステルテーマ ===== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --pink: #ffd6e8;
+  --pink-deep: #ff9ec7;
+  --lavender: #e6dbff;
+  --lavender-deep: #b79cff;
+  --mint: #d4f5e9;
+  --mint-deep: #7fd8b5;
+  --lemon: #fff3c4;
+  --lemon-deep: #ffd66b;
+  --sky: #d6ecff;
+  --sky-deep: #8ec5ff;
+  --text: #5a4a5e;
+  --text-light: #9b8aa0;
+  --card: #fffdfa;
+  --shadow: 0 4px 16px rgba(183, 156, 255, 0.18);
+}
+
+body {
+  font-family: "Kosugi Maru", "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif;
+  background: linear-gradient(160deg, #fff0f6 0%, #f3ecff 45%, #e8f8f2 100%);
+  min-height: 100vh;
+  color: var(--text);
+  line-height: 1.7;
+}
+
+.container { max-width: 860px; margin: 0 auto; padding: 20px 16px 80px; }
+
+/* ---- ヘッダー ---- */
+.header {
+  text-align: center;
+  padding: 24px 16px 12px;
+}
+.header h1 {
+  font-size: 1.5rem;
+  background: linear-gradient(90deg, var(--pink-deep), var(--lavender-deep));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.header .student-name {
+  display: inline-block;
+  margin-top: 6px;
+  background: var(--card);
+  border-radius: 999px;
+  padding: 4px 18px;
+  box-shadow: var(--shadow);
+  font-size: 0.95rem;
+}
+
+/* ---- パスコード画面 ---- */
+.gate {
+  max-width: 340px;
+  margin: 15vh auto;
+  background: var(--card);
+  border-radius: 24px;
+  padding: 36px 28px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+.gate h2 { font-size: 1.15rem; margin-bottom: 6px; }
+.gate p { font-size: 0.85rem; color: var(--text-light); margin-bottom: 18px; }
+.gate input {
+  width: 100%;
+  font-size: 1.4rem;
+  text-align: center;
+  letter-spacing: 0.4em;
+  padding: 10px;
+  border: 2px solid var(--lavender);
+  border-radius: 14px;
+  outline: none;
+  font-family: inherit;
+}
+.gate input:focus { border-color: var(--lavender-deep); }
+.gate button {
+  margin-top: 16px;
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  font-family: inherit;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(90deg, var(--pink-deep), var(--lavender-deep));
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.gate button:hover { transform: scale(1.03); }
+.gate .error { color: #e0607e; font-size: 0.85rem; margin-top: 10px; min-height: 1.4em; }
+
+/* ---- タブ ---- */
+.tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 12px 0;
+  position: sticky;
+  top: 0;
+  background: linear-gradient(160deg, #fff0f6, #f3ecff);
+  z-index: 10;
+  -webkit-overflow-scrolling: touch;
+}
+.tab {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: none;
+  font-family: inherit;
+  font-size: 0.9rem;
+  background: var(--card);
+  color: var(--text-light);
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: all 0.2s;
+}
+.tab.active {
+  background: linear-gradient(90deg, var(--pink-deep), var(--lavender-deep));
+  color: #fff;
+}
+
+/* ---- カード ---- */
+.card {
+  background: var(--card);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+.card h3 {
+  font-size: 1.02rem;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--lemon);
+  color: #a8862f;
+}
+
+/* ---- レッスンまとめ ---- */
+.lesson-date {
+  font-size: 0.8rem;
+  color: var(--text-light);
+}
+.lesson-section { margin-top: 12px; }
+.lesson-section .label {
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: var(--lavender-deep);
+  margin-bottom: 4px;
+}
+.lesson-section ul { list-style: none; }
+.lesson-section li {
+  padding: 6px 10px;
+  margin-bottom: 4px;
+  background: #faf7ff;
+  border-radius: 10px;
+  font-size: 0.92rem;
+}
+.lesson-section li.good { background: var(--mint); }
+.lesson-section li.review { background: var(--lemon); }
+
+/* ---- 単語帳 ---- */
+.vocab-controls {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.vocab-controls input, .vocab-controls select {
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 8px 14px;
+  border: 2px solid var(--lavender);
+  border-radius: 999px;
+  outline: none;
+  background: var(--card);
+  color: var(--text);
+}
+.vocab-controls input { flex: 1; min-width: 150px; }
+.vocab-item {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+}
+.vocab-item .row1 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.vocab-item .word { font-size: 1.05rem; font-weight: bold; }
+.vocab-item .meaning { color: var(--text-light); font-size: 0.88rem; margin-left: auto; }
+.pos {
+  font-size: 0.68rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.pos-noun { background: var(--sky); color: #3d7ab5; }
+.pos-verb { background: var(--mint); color: #2f8f68; }
+.pos-i-adjective { background: var(--lemon); color: #a8862f; }
+.pos-na-adjective { background: var(--lavender); color: #7c5fc9; }
+.pos-adverb { background: var(--pink); color: #c95f8a; }
+.pos-particle { background: #ffe3d4; color: #c07048; }
+.vocab-item .example {
+  margin-top: 6px;
+  font-size: 0.85rem;
+  color: var(--text-light);
+  display: none;
+}
+.vocab-item.open .example { display: block; }
+.vocab-check { width: 20px; height: 20px; accent-color: var(--mint-deep); }
+.vocab-stats { font-size: 0.82rem; color: var(--text-light); margin-bottom: 10px; }
+
+/* ---- 復習モード ---- */
+.review-card {
+  background: var(--card);
+  border-radius: 24px;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  text-align: center;
+  padding: 24px;
+  user-select: none;
+}
+.review-card .big { font-size: 1.8rem; font-weight: bold; }
+.review-card .hint { font-size: 0.8rem; color: var(--text-light); }
+.review-nav {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+  justify-content: center;
+}
+.review-nav button {
+  font-family: inherit;
+  font-size: 0.95rem;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+}
+.btn-ok { background: var(--mint); color: #2f8f68; }
+.btn-ng { background: var(--pink); color: #c95f8a; }
+.btn-neutral { background: var(--card); color: var(--text-light); }
+
+/* ---- 宿題 ---- */
+.hw-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--card);
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow);
+}
+.hw-item input { width: 22px; height: 22px; accent-color: var(--pink-deep); flex-shrink: 0; }
+.hw-item.done .hw-text { text-decoration: line-through; color: var(--text-light); }
+.hw-item a { color: var(--sky-deep); font-size: 0.85rem; }
+.hw-lesson-label { font-size: 0.8rem; color: var(--text-light); margin: 14px 0 8px; }
+
+/* ---- 進捗 / Can-do ---- */
+.prog-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 12px;
+  border-radius: 10px;
+  margin-bottom: 4px;
+  background: #faf7ff;
+  font-size: 0.9rem;
+}
+.prog-item.done { background: var(--mint); }
+.prog-item .date { margin-left: auto; font-size: 0.75rem; color: var(--text-light); white-space: nowrap; }
+.prog-item .part {
+  font-size: 0.68rem;
+  background: var(--sky);
+  color: #3d7ab5;
+  padding: 1px 8px;
+  border-radius: 999px;
+}
+.progress-bar {
+  height: 10px;
+  background: #f0eaf7;
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 6px 0 14px;
+}
+.progress-bar > div {
+  height: 100%;
+  background: linear-gradient(90deg, var(--mint-deep), var(--sky-deep));
+  border-radius: 999px;
+  transition: width 0.4s;
+}
+
+/* ---- アプリリンク集 ---- */
+.app-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+}
+.app-link {
+  display: block;
+  background: var(--card);
+  border-radius: 18px;
+  padding: 20px 14px;
+  text-align: center;
+  text-decoration: none;
+  color: var(--text);
+  font-size: 0.9rem;
+  box-shadow: var(--shadow);
+  transition: transform 0.15s;
+}
+.app-link:hover { transform: translateY(-3px); }
+
+.hidden { display: none !important; }
+.empty-note { text-align: center; color: var(--text-light); font-size: 0.9rem; padding: 30px 0; }

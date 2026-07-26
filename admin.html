@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>なつき先生の管理画面 🎀</title>
+<link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>🎀 なつき先生の管理画面</h1>
+  </div>
+
+  <!-- 生徒選択バー -->
+  <div class="student-bar">
+    <select id="student-select"></select>
+    <button id="add-student-btn" class="mini-btn">＋ 新しい生徒さん</button>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="info">🌷 生徒情報</button>
+    <button class="tab" data-tab="lessons">📖 レッスン</button>
+    <button class="tab" data-tab="vocab">📚 単語帳</button>
+    <button class="tab" data-tab="progress">🌱 進捗</button>
+  </div>
+
+  <div id="tab-info" class="tab-content"></div>
+  <div id="tab-lessons" class="tab-content hidden"></div>
+  <div id="tab-vocab" class="tab-content hidden"></div>
+  <div id="tab-progress" class="tab-content hidden"></div>
+</div>
+
+<!-- モーダル -->
+<div id="modal-backdrop" class="modal-backdrop hidden">
+  <div class="modal" id="modal"></div>
+</div>
+
+<!-- 先生ログイン -->
+<div id="login-gate" class="gate hidden">
+  <h2>🎀 先生ログイン</h2>
+  <p>なつき先生専用のページです</p>
+  <div class="form-row"><input id="login-email" type="email" placeholder="メールアドレス" autocomplete="username" style="letter-spacing:normal;font-size:1rem"></div>
+  <div class="form-row"><input id="login-pass" type="password" placeholder="パスワード" autocomplete="current-password" style="letter-spacing:normal;font-size:1rem"></div>
+  <button id="login-btn">ログイン ➜</button>
+  <div id="login-error" class="error"></div>
+</div>
+
+<script src="js/firebase-config.js?v=4"></script>
+<script type="module">
+  await import("./js/store.js?v=4");
+  const gate = document.getElementById("login-gate");
+  const container = document.querySelector(".container");
+  container.classList.add("hidden");
+  let started = false;
+
+  Store.auth.onChange(async user => {
+    if (user && !started) {
+      started = true;
+      gate.classList.add("hidden");
+      await Store.initForTeacher();
+      await import("./js/admin.js?v=4");
+      container.classList.remove("hidden");
+    } else if (!user) {
+      gate.classList.remove("hidden");
+    }
+  });
+
+  const tryLogin = () => {
+    const email = document.getElementById("login-email").value.trim();
+    const pass = document.getElementById("login-pass").value;
+    Store.auth.signIn(email, pass).catch(() => {
+      document.getElementById("login-error").textContent = "メールアドレスかパスワードがちがいます 🥲";
+    });
+  };
+  document.getElementById("login-btn").addEventListener("click", tryLogin);
+  document.getElementById("login-pass").addEventListener("keydown", e => { if (e.key === "Enter") tryLogin(); });
+</script>
+</body>
+</html>
