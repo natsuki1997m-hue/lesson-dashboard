@@ -331,3 +331,28 @@ body {
 
 .hidden { display: none !important; }
 .empty-note { text-align: center; color: var(--text-light); font-size: 0.9rem; padding: 30px 0; }
+
+/* ふりがな（ルビ）：漢字の上に小さく表示 */
+ruby { ruby-position: over; }
+rt {
+  font-size: 0.55em;
+  color: var(--text-light);
+  letter-spacing: 0.05em;
+}
+.vocab-item .word ruby rt, .review-card .big ruby rt { font-size: 0.5em; }
+
+/* 見出しの英語併記 */
+.label-en {
+  font-size: 0.72rem;
+  font-weight: normal;
+  color: var(--text-light);
+  margin-left: 6px;
+  letter-spacing: 0.02em;
+}
+.tab .tab-en {
+  display: block;
+  font-size: 0.6rem;
+  font-weight: normal;
+  opacity: 0.75;
+  line-height: 1.1;
+}

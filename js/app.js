@@ -51,6 +51,13 @@
   function esc(s) {
     return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   }
+  // 「漢字（かんじ）」形式を、漢字の上にふりがなが乗る表示（ルビ）に変換する
+  function ruby(s) {
+    return esc(s).replace(
+      /([一-鿿々ヶ〆]+)（([ぁ-んァ-ヶー]+)）/g,
+      "<ruby>$1<rt>$2</rt></ruby>"
+    );
+  }
   function fmtDate(d) {
     if (!d) return "";
     const [y, m, day] = d.split("-");
@@ -66,23 +73,28 @@
       <div class="card">
         <h3>📖 レッスン${l.number}回目 <span class="lesson-date">${fmtDate(l.date)}</span></h3>
         <div class="lesson-section">
-          <div class="label">✏️ 今日勉強したこと</div>
-          <ul><li>${esc(l.studied)}</li></ul>
+          <div class="label">✏️ 今日勉強したこと <span class="label-en">What we studied</span></div>
+          <ul><li>${ruby(l.studied)}</li></ul>
         </div>
+        ${l.points && l.points.length ? `
+        <div class="lesson-section">
+          <div class="label">💡 今日のポイント <span class="label-en">Key points</span></div>
+          <ul>${l.points.map(p => `<li>${ruby(p)}</li>`).join("")}</ul>
+        </div>` : ""}
         ${l.newPhrases && l.newPhrases.length ? `
         <div class="lesson-section">
-          <div class="label">💬 新しいフレーズ</div>
-          <ul>${l.newPhrases.map(p => `<li>${esc(p)}</li>`).join("")}</ul>
+          <div class="label">💬 新しいフレーズ <span class="label-en">New phrases</span></div>
+          <ul>${l.newPhrases.map(p => `<li>${ruby(p)}</li>`).join("")}</ul>
         </div>` : ""}
         ${l.goodPoints && l.goodPoints.length ? `
         <div class="lesson-section">
-          <div class="label">🌟 よかったところ</div>
-          <ul>${l.goodPoints.map(p => `<li class="good">${esc(p)}</li>`).join("")}</ul>
+          <div class="label">🌟 よかったところ <span class="label-en">Good job!</span></div>
+          <ul>${l.goodPoints.map(p => `<li class="good">${ruby(p)}</li>`).join("")}</ul>
         </div>` : ""}
         ${l.reviewPoints && l.reviewPoints.length ? `
         <div class="lesson-section">
-          <div class="label">🔁 もう一度チェック</div>
-          <ul>${l.reviewPoints.map(p => `<li class="review">${esc(p)}</li>`).join("")}</ul>
+          <div class="label">🔁 もう一度チェック <span class="label-en">Let's review</span></div>
+          <ul>${l.reviewPoints.map(p => `<li class="review">${ruby(p)}</li>`).join("")}</ul>
         </div>` : ""}
       </div>
     `).join("");
@@ -113,11 +125,11 @@
       <div class="vocab-item" data-id="${esc(v.id)}">
         <div class="row1">
           <input type="checkbox" class="vocab-check" ${v.checked ? "checked" : ""}>
-          <span class="word">${esc(v.word)}</span>
+          <span class="word">${ruby(v.word)}</span>
           <span class="pos pos-${esc(v.pos)}">${esc(v.pos)}</span>
           <span class="meaning">${esc(v.meaning)}</span>
         </div>
-        <div class="example">💡 ${esc(v.example || "")}</div>
+        <div class="example">💡 ${ruby(v.example || "")}</div>
       </div>
     `).join("");
 
@@ -158,8 +170,8 @@
       <div class="vocab-stats" style="text-align:center">${reviewIndex + 1} / ${reviewDeck.length}</div>
       <div class="review-card" id="review-card">
         ${reviewFlipped
-          ? `<div class="big">${esc(v.meaning)}</div><div>💡 ${esc(v.example || "")}</div><div class="hint">タップでもどる</div>`
-          : `<div class="big">${esc(v.word)}</div><span class="pos pos-${esc(v.pos)}">${esc(v.pos)}</span><div class="hint">タップで意味を見る</div>`}
+          ? `<div class="big">${esc(v.meaning)}</div><div>💡 ${ruby(v.example || "")}</div><div class="hint">タップでもどる</div>`
+          : `<div class="big">${ruby(v.word)}</div><span class="pos pos-${esc(v.pos)}">${esc(v.pos)}</span><div class="hint">タップで意味を見る</div>`}
       </div>
       <div class="review-nav">
         <button class="btn-ng" id="review-ng">🤔 まだ</button>
@@ -214,7 +226,7 @@
       ${lesson.items.map(h => `
         <div class="hw-item ${h.done ? "done" : ""}" data-key="${esc(h.key)}">
           <input type="checkbox" ${h.done ? "checked" : ""}>
-          <span class="hw-text">${esc(h.text)}</span>
+          <span class="hw-text">${ruby(h.text)}</span>
           ${h.url ? `<a href="${esc(h.url)}" target="_blank" rel="noopener">ひらく ↗</a>` : ""}
         </div>
       `).join("")}
@@ -245,7 +257,7 @@
           ${p.items.map(i => `
             <div class="prog-item ${i.done ? "done" : ""}">
               <span>${i.done ? "✅" : "⬜️"}</span>
-              <span>${esc(i.text)}</span>
+              <span>${ruby(i.text)}</span>
               <span class="date">${esc(i.date || "")}</span>
             </div>`).join("")}
         </div>`;
@@ -264,7 +276,7 @@
             <div class="prog-item ${i.done ? "done" : ""}">
               <span>${i.done ? "✅" : "⬜️"}</span>
               <span class="part">${esc(i.part)}</span>
-              <span>${esc(i.text)}</span>
+              <span>${ruby(i.text)}</span>
             </div>`).join("")}
         </div>`;
       }).join("");

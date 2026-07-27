@@ -77,6 +77,13 @@
         <div class="form-row"><label>お名前</label><input id="info-name" value="${esc(s.name)}"></div>
         <div class="form-row"><label>パスコード</label><input id="info-pass" value="${esc(s.passcode)}" maxlength="6"></div>
         <div class="form-row"><label>教科書</label><input id="info-book" value="${esc(s.textbook || "")}" placeholder="例：げんき2"></div>
+        <div class="form-row">
+          <label>まとめの言語（ビデオ分析のときに使います）</label>
+          <select id="info-lang">
+            <option value="en" ${(s.language || "en") === "en" ? "selected" : ""}>🌍 英語ベース（説明は英語＋日本語の例文）</option>
+            <option value="ja" ${s.language === "ja" ? "selected" : ""}>🇯🇵 日本語（漢字が読める生徒さん向け）</option>
+          </select>
+        </div>
         <div class="form-actions"><button class="mini-btn" id="info-save">保存する 💾</button></div>
       </div>
       <div class="card">
@@ -92,6 +99,7 @@
       s.name = document.getElementById("info-name").value.trim() || s.name;
       s.passcode = document.getElementById("info-pass").value.trim() || s.passcode;
       s.textbook = document.getElementById("info-book").value.trim();
+      s.language = document.getElementById("info-lang").value;
       Store.saveStudent(s);
       renderStudentSelect();
       renderInfo();
@@ -107,13 +115,14 @@
 
   // ---- レッスン ----
   function lessonForm(lesson) {
-    const l = lesson || { date: new Date().toISOString().slice(0, 10), number: "", studied: "", newPhrases: [], goodPoints: [], reviewPoints: [], homework: [] };
+    const l = lesson || { date: new Date().toISOString().slice(0, 10), number: "", studied: "", points: [], newPhrases: [], goodPoints: [], reviewPoints: [], homework: [] };
     const hwText = (l.homework || []).map(h => h.url ? `${h.text} | ${h.url}` : h.text).join("\n");
     openModal(`
       <h3>${lesson ? "📖 レッスンを編集" : "📖 新しいレッスン記録"}</h3>
       <div class="form-row"><label>日付</label><input id="f-date" type="date" value="${esc(l.date)}"></div>
       <div class="form-row"><label>レッスン回数</label><input id="f-number" type="number" value="${esc(l.number)}" placeholder="例：5"></div>
       <div class="form-row"><label>✏️ 今日勉強したこと</label><textarea id="f-studied" rows="2">${esc(l.studied)}</textarea></div>
+      <div class="form-row"><label>💡 今日のポイント（1行に1つ）</label><textarea id="f-points" rows="2">${esc((l.points || []).join("\n"))}</textarea></div>
       <div class="form-row"><label>💬 新しいフレーズ（1行に1つ）</label><textarea id="f-phrases" rows="2">${esc((l.newPhrases || []).join("\n"))}</textarea></div>
       <div class="form-row"><label>🌟 よかったところ（1行に1つ）</label><textarea id="f-good" rows="2">${esc((l.goodPoints || []).join("\n"))}</textarea></div>
       <div class="form-row"><label>🔁 もう一度チェック（1行に1つ）</label><textarea id="f-review" rows="2">${esc((l.reviewPoints || []).join("\n"))}</textarea></div>
@@ -143,6 +152,7 @@
         date: document.getElementById("f-date").value,
         number: Number(document.getElementById("f-number").value) || "",
         studied: document.getElementById("f-studied").value.trim(),
+        points: lines("f-points"),
         newPhrases: lines("f-phrases"),
         goodPoints: lines("f-good"),
         reviewPoints: lines("f-review"),

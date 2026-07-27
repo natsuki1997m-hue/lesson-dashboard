@@ -26,12 +26,12 @@
   </div>
 
   <div class="tabs">
-    <button class="tab active" data-tab="lessons">📖 クラスまとめ</button>
-    <button class="tab" data-tab="vocab">📚 単語帳</button>
-    <button class="tab" data-tab="review">🃏 復習</button>
-    <button class="tab" data-tab="homework">📝 宿題</button>
-    <button class="tab" data-tab="progress">🌱 進捗</button>
-    <button class="tab" data-tab="apps">🎮 アプリ</button>
+    <button class="tab active" data-tab="lessons">📖 クラスまとめ<span class="tab-en">Class Summary</span></button>
+    <button class="tab" data-tab="vocab">📚 単語帳<span class="tab-en">Vocabulary</span></button>
+    <button class="tab" data-tab="review">🃏 復習<span class="tab-en">Flashcards</span></button>
+    <button class="tab" data-tab="homework">📝 宿題<span class="tab-en">Homework</span></button>
+    <button class="tab" data-tab="progress">🌱 進捗<span class="tab-en">Progress</span></button>
+    <button class="tab" data-tab="apps">🎮 アプリ<span class="tab-en">Apps</span></button>
   </div>
 
   <div id="tab-lessons" class="tab-content"></div>
@@ -57,12 +57,12 @@
   <div id="tab-apps" class="tab-content hidden"></div>
 </div>
 
-<script src="js/firebase-config.js?v=4"></script>
+<script src="js/firebase-config.js?v=5"></script>
 <script type="module">
-  await import("./js/store.js?v=4");
+  await import("./js/store.js?v=5");
   const sid = new URLSearchParams(location.search).get("s") || "caspar-k7x2";
   await Store.initForStudent(sid);
-  await import("./js/app.js?v=4");
+  await import("./js/app.js?v=5");
 </script>
 </body>
 </html>
