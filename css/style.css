@@ -356,3 +356,63 @@ rt {
   opacity: 0.75;
   line-height: 1.1;
 }
+
+/* ---- クラスまとめ：日付アコーディオン ---- */
+.lesson-acc {
+  background: var(--card);
+  border-radius: 16px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.lesson-acc-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: var(--text);
+  text-align: left;
+}
+.acc-date { font-weight: bold; white-space: nowrap; }
+.acc-num {
+  font-size: 0.78rem;
+  color: var(--text-light);
+  flex: 1;
+}
+.acc-new {
+  font-size: 0.62rem;
+  font-weight: bold;
+  color: #fff;
+  background: linear-gradient(135deg, #f8a5c2, #c39bd3);
+  padding: 2px 8px;
+  border-radius: 999px;
+  letter-spacing: 0.06em;
+}
+.acc-arrow {
+  color: var(--lavender-deep);
+  transition: transform 0.25s;
+  font-size: 0.85rem;
+}
+.lesson-acc.open .acc-arrow { transform: rotate(180deg); }
+.lesson-acc.open .lesson-acc-head { background: #faf7ff; }
+.lesson-acc-body { padding: 4px 16px 16px; }
+
+/* 中身を読みやすく */
+.lesson-text {
+  font-size: 0.9rem;
+  line-height: 1.75;
+  padding: 2px 2px 0;
+}
+.lesson-section { margin-top: 14px; }
+.lesson-section li {
+  padding: 8px 12px;
+  margin-bottom: 6px;
+  line-height: 1.7;
+  font-size: 0.88rem;
+}

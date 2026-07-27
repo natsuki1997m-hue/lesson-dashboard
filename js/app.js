@@ -64,40 +64,53 @@
     return `${y}年${Number(m)}月${Number(day)}日`;
   }
 
-  // ---- クラスまとめ ----
+  // ---- クラスまとめ（日付一覧 → タップで開閉） ----
   function renderLessons() {
     const lessons = Store.getLessons(studentId);
     const el = document.getElementById("tab-lessons");
     if (!lessons.length) { el.innerHTML = '<div class="empty-note">まだレッスン記録がありません 🌱</div>'; return; }
-    el.innerHTML = lessons.map(l => `
-      <div class="card">
-        <h3>📖 レッスン${l.number}回目 <span class="lesson-date">${fmtDate(l.date)}</span></h3>
-        <div class="lesson-section">
-          <div class="label">✏️ 今日勉強したこと <span class="label-en">What we studied</span></div>
-          <ul><li>${ruby(l.studied)}</li></ul>
+    el.innerHTML = lessons.map((l, i) => `
+      <div class="lesson-acc">
+        <button class="lesson-acc-head" type="button">
+          <span class="acc-date">📖 ${fmtDate(l.date)}</span>
+          <span class="acc-num">レッスン${l.number}回目</span>
+          ${i === 0 ? '<span class="acc-new">NEW</span>' : ""}
+          <span class="acc-arrow">▾</span>
+        </button>
+        <div class="lesson-acc-body hidden">
+          <div class="lesson-section">
+            <div class="label">✏️ 今日勉強したこと <span class="label-en">What we studied</span></div>
+            <p class="lesson-text">${ruby(l.studied)}</p>
+          </div>
+          ${l.points && l.points.length ? `
+          <div class="lesson-section">
+            <div class="label">💡 今日のポイント <span class="label-en">Key points</span></div>
+            <ul>${l.points.map(p => `<li>${ruby(p)}</li>`).join("")}</ul>
+          </div>` : ""}
+          ${l.newPhrases && l.newPhrases.length ? `
+          <div class="lesson-section">
+            <div class="label">💬 新しいフレーズ <span class="label-en">New phrases</span></div>
+            <ul>${l.newPhrases.map(p => `<li>${ruby(p)}</li>`).join("")}</ul>
+          </div>` : ""}
+          ${l.goodPoints && l.goodPoints.length ? `
+          <div class="lesson-section">
+            <div class="label">🌟 よかったところ <span class="label-en">Good job!</span></div>
+            <ul>${l.goodPoints.map(p => `<li class="good">${ruby(p)}</li>`).join("")}</ul>
+          </div>` : ""}
+          ${l.reviewPoints && l.reviewPoints.length ? `
+          <div class="lesson-section">
+            <div class="label">🔁 もう一度チェック <span class="label-en">Let's review</span></div>
+            <ul>${l.reviewPoints.map(p => `<li class="review">${ruby(p)}</li>`).join("")}</ul>
+          </div>` : ""}
         </div>
-        ${l.points && l.points.length ? `
-        <div class="lesson-section">
-          <div class="label">💡 今日のポイント <span class="label-en">Key points</span></div>
-          <ul>${l.points.map(p => `<li>${ruby(p)}</li>`).join("")}</ul>
-        </div>` : ""}
-        ${l.newPhrases && l.newPhrases.length ? `
-        <div class="lesson-section">
-          <div class="label">💬 新しいフレーズ <span class="label-en">New phrases</span></div>
-          <ul>${l.newPhrases.map(p => `<li>${ruby(p)}</li>`).join("")}</ul>
-        </div>` : ""}
-        ${l.goodPoints && l.goodPoints.length ? `
-        <div class="lesson-section">
-          <div class="label">🌟 よかったところ <span class="label-en">Good job!</span></div>
-          <ul>${l.goodPoints.map(p => `<li class="good">${ruby(p)}</li>`).join("")}</ul>
-        </div>` : ""}
-        ${l.reviewPoints && l.reviewPoints.length ? `
-        <div class="lesson-section">
-          <div class="label">🔁 もう一度チェック <span class="label-en">Let's review</span></div>
-          <ul>${l.reviewPoints.map(p => `<li class="review">${ruby(p)}</li>`).join("")}</ul>
-        </div>` : ""}
       </div>
     `).join("");
+    el.querySelectorAll(".lesson-acc-head").forEach(head => {
+      head.addEventListener("click", () => {
+        head.parentElement.classList.toggle("open");
+        head.nextElementSibling.classList.toggle("hidden");
+      });
+    });
   }
 
   // ---- 単語帳 ----
