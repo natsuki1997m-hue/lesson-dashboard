@@ -326,6 +326,9 @@ body {
   font-size: 0.9rem;
   box-shadow: var(--shadow);
   transition: transform 0.15s;
+  /* 単語の途中で改行しない（区切りたい位置はデータ側のゼロ幅スペースで指定） */
+  word-break: keep-all;
+  overflow-wrap: anywhere;
 }
 .app-link:hover { transform: translateY(-3px); }
 

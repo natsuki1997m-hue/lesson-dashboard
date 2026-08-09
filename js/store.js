@@ -60,11 +60,16 @@ function remove(col, id) {
 function newId(col) {
   return doc(collection(db, col)).id;
 }
+// 「レッスン12」「Lesson 3: ...」から番号を取り出す（なければ最後尾へ）
+function lessonNum(name) {
+  const m = String(name || "").match(/\d+/);
+  return m ? Number(m[0]) : 999;
+}
 
 // 新しい生徒さんに自動で付ける練習アプリ一覧
 const DEFAULT_APPS = [
   { name: "⏰ 時間の練習", url: "https://natsuki1997m-hue.github.io/clock-practice/clock_practice.html" },
-  { name: "📅 カレンダークイズ", url: "https://natsuki1997m-hue.github.io/calendar/calendar_quiz.html" },
+  { name: "📅 カレンダー​クイズ", url: "https://natsuki1997m-hue.github.io/calendar/calendar_quiz.html" },
   { name: "💰 おかねの練習", url: "https://natsuki1997m-hue.github.io/moneypractice/" },
   { name: "🗺️ 道案内ゲーム", url: "https://natsuki1997m-hue.github.io/navigame/" },
   { name: "✏️ げんき1漢字", url: "https://natsuki1997m-hue.github.io/kanji_practice1/" },
@@ -170,8 +175,17 @@ window.Store = {
   },
 
   // ---- 進捗 / Can-do ----
-  getProgress(studentId) { return cache.progress.filter(p => p.studentId === studentId); },
-  getCando(studentId) { return cache.cando.filter(c => c.studentId === studentId); },
+  // 「レッスン1, 2, ... 12, 漢字」の順に並べる（番号なしグループは最後）
+  getProgress(studentId) {
+    return cache.progress
+      .filter(p => p.studentId === studentId)
+      .sort((a, b) => lessonNum(a.lesson) - lessonNum(b.lesson));
+  },
+  getCando(studentId) {
+    return cache.cando
+      .filter(c => c.studentId === studentId)
+      .sort((a, b) => lessonNum(a.lesson) - lessonNum(b.lesson));
+  },
   setProgressDone(studentId, lessonName, itemIndex, done) {
     const p = cache.progress.find(p => p.studentId === studentId && p.lesson === lessonName);
     if (!p || !p.items[itemIndex]) return;
