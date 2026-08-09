@@ -176,7 +176,7 @@
 
   // ---- レッスン ----
   function lessonForm(lesson) {
-    const l = lesson || { date: new Date().toISOString().slice(0, 10), number: "", studied: "", points: [], newPhrases: [], goodPoints: [], reviewPoints: [], mistakes: [], homework: [] };
+    const l = lesson || { date: new Date().toISOString().slice(0, 10), number: "", studied: "", points: [], newPhrases: [], goodPoints: [], reviewPoints: [], mistakes: [], canNow: [], focusNext: [], note: "", homework: [] };
     const hwText = (l.homework || []).map(h => h.url ? `${h.text} | ${h.url}` : h.text).join("\n");
     openModal(`
       <h3>${lesson ? "📖 レッスンを編集" : "📖 新しいレッスン記録"}</h3>
@@ -192,6 +192,9 @@
         <textarea id="f-mistakes" rows="3">${esc((l.mistakes || []).map(m => [m.said, m.corrected, m.why || "", m.category || ""].join(" | ")).join("\n"))}</textarea>
         <div class="note">カテゴリは 助詞 / 活用 / 語彙 / 語順 / 発音 / その他</div>
       </div>
+      <div class="form-row"><label>✨ できるようになったこと（1行に1つ）</label><textarea id="f-cannow" rows="2">${esc((l.canNow || []).join("\n"))}</textarea></div>
+      <div class="form-row"><label>🎯 つぎの目標（1行に1つ）</label><textarea id="f-focus" rows="2">${esc((l.focusNext || []).join("\n"))}</textarea></div>
+      <div class="form-row"><label>🌸 先生からのメッセージ</label><textarea id="f-note" rows="2">${esc(l.note || "")}</textarea></div>
       <div class="form-row">
         <label>📝 宿題（1行に1つ）</label>
         <textarea id="f-hw" rows="3">${esc(hwText)}</textarea>
@@ -222,6 +225,9 @@
         newPhrases: lines("f-phrases"),
         goodPoints: lines("f-good"),
         reviewPoints: lines("f-review"),
+        canNow: lines("f-cannow"),
+        focusNext: lines("f-focus"),
+        note: document.getElementById("f-note").value.trim(),
         mistakes: lines("f-mistakes").map(line => {
           const [said, corrected, why, category] = line.split("|").map(x => x.trim());
           const m = { said: said || "", corrected: corrected || "" };

@@ -65,6 +65,11 @@
     return `${y}年${Number(m)}月${Number(day)}日`;
   }
 
+  // その日に学習した単語を取り出す
+  function wordsOf(date) {
+    return Store.getVocab(studentId).filter(v => v.learned === date);
+  }
+
   // ---- クラスまとめ（日付一覧 → タップで開閉） ----
   function renderLessons() {
     const lessons = Store.getLessons(studentId);
@@ -87,6 +92,13 @@
           <div class="lesson-section">
             <div class="label">💡 今日のポイント <span class="label-en">Key points</span></div>
             <ul>${l.points.map(p => `<li>${ruby(p)}</li>`).join("")}</ul>
+          </div>` : ""}
+          ${wordsOf(l.date).length ? `
+          <div class="lesson-section">
+            <div class="label">📚 今日学習した言葉 <span class="label-en">Words from this lesson</span></div>
+            <div class="wod-grid">${wordsOf(l.date).map(v => `
+              <div class="wod-chip"><span class="wod-word">${ruby(v.word)}</span><span class="wod-mean">${esc(v.meaning)}</span></div>`).join("")}
+            </div>
           </div>` : ""}
           ${l.newPhrases && l.newPhrases.length ? `
           <div class="lesson-section">
@@ -119,6 +131,21 @@
           <div class="lesson-section">
             <div class="label">🔁 もう一度チェック <span class="label-en">Let's review</span></div>
             <ul>${l.reviewPoints.map(p => `<li class="review">${ruby(p)}</li>`).join("")}</ul>
+          </div>` : ""}
+          ${l.canNow && l.canNow.length ? `
+          <div class="lesson-section">
+            <div class="label">✨ できるようになったこと <span class="label-en">What you can do now</span></div>
+            <ul>${l.canNow.map(p => `<li class="can">${ruby(p)}</li>`).join("")}</ul>
+          </div>` : ""}
+          ${l.focusNext && l.focusNext.length ? `
+          <div class="lesson-section">
+            <div class="label">🎯 つぎの目標 <span class="label-en">Focus for next time</span></div>
+            <ul>${l.focusNext.map(p => `<li class="focus">${ruby(p)}</li>`).join("")}</ul>
+          </div>` : ""}
+          ${l.note ? `
+          <div class="t-note">
+            <div class="t-note-head">🌸 なつき先生から <span class="label-en">Teacher's note</span></div>
+            <p>${ruby(l.note)}</p>
           </div>` : ""}
         </div>
       </div>
@@ -348,7 +375,7 @@
         const pct = Math.round(done / p.items.length * 100);
         return `
         <div class="card">
-          <h3>🌱 ${esc(p.lesson)} <span class="badge">${done}/${p.items.length}</span></h3>
+          <h3><span class="ring" style="--p:${Math.round(done / p.items.length * 100)}"><i>${Math.round(done / p.items.length * 100)}%</i></span> ${esc(p.lesson)} <span class="badge">${done}/${p.items.length}</span></h3>
           <div class="progress-bar"><div style="width:${pct}%"></div></div>
           ${p.items.map(i => `
             <div class="prog-item ${i.done ? "done" : ""}">
@@ -366,7 +393,7 @@
         const pct = Math.round(done / c.items.length * 100);
         return `
         <div class="card">
-          <h3>💪 ${esc(c.lesson)} <span class="badge">${done}/${c.items.length}</span></h3>
+          <h3><span class="ring ring-sky" style="--p:${pct}"><i>${pct}%</i></span> ${esc(c.lesson)} <span class="badge">${done}/${c.items.length}</span></h3>
           <div class="progress-bar"><div style="width:${pct}%"></div></div>
           ${c.items.map(i => `
             <div class="prog-item ${i.done ? "done" : ""}">
