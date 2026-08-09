@@ -22,13 +22,15 @@
   </div>
 
   <div class="tabs">
-    <button class="tab active" data-tab="info">🌷 生徒情報</button>
+    <button class="tab active" data-tab="overview">👥 一覧</button>
+    <button class="tab" data-tab="info">🌷 生徒情報</button>
     <button class="tab" data-tab="lessons">📖 レッスン</button>
     <button class="tab" data-tab="vocab">📚 単語帳</button>
     <button class="tab" data-tab="progress">🌱 進捗</button>
   </div>
 
-  <div id="tab-info" class="tab-content"></div>
+  <div id="tab-overview" class="tab-content"></div>
+  <div id="tab-info" class="tab-content hidden"></div>
   <div id="tab-lessons" class="tab-content hidden"></div>
   <div id="tab-vocab" class="tab-content hidden"></div>
   <div id="tab-progress" class="tab-content hidden"></div>
@@ -49,9 +51,9 @@
   <div id="login-error" class="error"></div>
 </div>
 
-<script src="js/firebase-config.js?v=11"></script>
+<script src="js/firebase-config.js?v=12"></script>
 <script type="module">
-  await import("./js/store.js?v=11");
+  await import("./js/store.js?v=12");
   const gate = document.getElementById("login-gate");
   const container = document.querySelector(".container");
   container.classList.add("hidden");
@@ -62,7 +64,7 @@
       started = true;
       gate.classList.add("hidden");
       await Store.initForTeacher();
-      await import("./js/admin.js?v=11");
+      await import("./js/admin.js?v=12");
       container.classList.remove("hidden");
     } else if (!user) {
       gate.classList.remove("hidden");

@@ -72,6 +72,60 @@
     });
   });
 
+
+  // ---- 生徒一覧ダッシュボード ----
+  function renderOverview() {
+    const el = document.getElementById("tab-overview");
+    const students = Store.listStudents();
+    if (!students.length) { el.innerHTML = '<div class="empty-note">生徒さんがいません</div>'; return; }
+    const today = new Date();
+    const rows = students.map(s => {
+      const lessons = Store.getLessons(s.id);
+      const vocab = Store.getVocab(s.id);
+      const hw = Store.getHomework(s.id).flatMap(h => h.items);
+      const lastLesson = lessons[0] ? lessons[0].date : null;
+      const days = lastLesson ? Math.floor((today - new Date(lastLesson)) / 86400000) : null;
+      const hwDone = hw.length ? Math.round(hw.filter(i => i.done).length / hw.length * 100) : null;
+      const vocabDone = vocab.length ? Math.round(vocab.filter(v => v.checked).length / vocab.length * 100) : null;
+      const lastReview = vocab.map(v => v.lastReview || "").sort().reverse()[0] || null;
+      return { s, lessons: lessons.length, lastLesson, days, hwDone, vocab: vocab.length, vocabDone, lastReview };
+    }).sort((a, b) => (a.lastLesson || "") < (b.lastLesson || "") ? 1 : -1);
+
+    el.innerHTML = `
+      <div class="card">
+        <h3>👥 生徒さん一覧 <span class="badge">${students.length}人</span></h3>
+        <div class="ov-scroll">
+        <table class="ov-table">
+          <thead><tr>
+            <th>生徒さん</th><th>最終レッスン</th><th>回数</th><th>宿題</th><th>単語</th><th>最後の復習</th><th>言語</th>
+          </tr></thead>
+          <tbody>
+            ${rows.map(r => `
+            <tr class="ov-row" data-sid="${esc(r.s.id)}">
+              <td class="ov-name">🌷 ${esc(r.s.name)}</td>
+              <td>${r.lastLesson ? fmtDate(r.lastLesson) : "—"}${r.days !== null && r.days >= 10 ? ' <span class="ov-warn">' + r.days + '日前</span>' : ""}</td>
+              <td>${r.lessons}回</td>
+              <td>${r.hwDone === null ? "—" : `<span class="${r.hwDone < 50 ? "ov-warn" : ""}">${r.hwDone}%</span>`}</td>
+              <td>${r.vocab}語${r.vocabDone !== null ? `（${r.vocabDone}%✓）` : ""}</td>
+              <td>${r.lastReview ? fmtDate(r.lastReview) : "—"}</td>
+              <td>${r.s.language === "ja" ? "🇯🇵" : "🌍"}</td>
+            </tr>`).join("")}
+          </tbody>
+        </table>
+        </div>
+        <p class="cat-note">行をクリックすると、その生徒さんの管理ページに移動します</p>
+      </div>`;
+    el.querySelectorAll(".ov-row").forEach(row => row.addEventListener("click", () => {
+      currentStudentId = row.dataset.sid;
+      renderStudentSelect();
+      renderAll();
+      document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+      document.querySelector('[data-tab="info"]').classList.add("active");
+      document.querySelectorAll(".tab-content").forEach(c => c.classList.add("hidden"));
+      document.getElementById("tab-info").classList.remove("hidden");
+    }));
+  }
+
   // ---- 生徒情報 ----
   function renderInfo() {
     const s = Store.getStudent(currentStudentId);
@@ -342,6 +396,7 @@
   }
 
   function renderAll() {
+    renderOverview();
     renderStudentSelect();
     renderInfo();
     renderLessons();

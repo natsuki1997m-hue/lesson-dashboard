@@ -490,3 +490,46 @@ rt {
   margin-top: 4px;
   line-height: 1.3;
 }
+
+/* ---- 復習：きょうの復習・ストリーク・読み上げ ---- */
+.btn-due {
+  font-family: inherit;
+  font-size: 0.95rem;
+  padding: 12px 26px;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  background: linear-gradient(90deg, var(--pink-deep), var(--lavender-deep));
+  color: #fff;
+}
+.streak {
+  display: inline-block;
+  background: #fff2e0;
+  color: #d18b2c;
+  font-size: 0.85rem;
+  font-weight: bold;
+  border-radius: 999px;
+  padding: 4px 14px;
+  margin-bottom: 10px;
+}
+.tts-btn {
+  border: none;
+  background: var(--sky);
+  color: #3d7ab5;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  padding: 3px 9px;
+  cursor: pointer;
+  font-family: inherit;
+  flex-shrink: 0;
+}
+.tts-card { font-size: 0.9rem; padding: 6px 16px; }
+
+/* ---- ミスの記録グラフ ---- */
+.cat-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.cat-name { font-size: 0.82rem; width: 3.4em; flex-shrink: 0; }
+.cat-bar { flex: 1; height: 14px; background: #f3eefa; border-radius: 999px; overflow: hidden; }
+.cat-bar div { height: 100%; border-radius: 999px; transition: width 0.4s; }
+.cat-num { font-size: 0.82rem; color: var(--text-light); width: 2em; text-align: right; }
+.cat-note { font-size: 0.78rem; color: var(--text-light); margin-top: 10px; line-height: 1.7; }
