@@ -473,3 +473,20 @@ rt {
   padding: 2px 8px;
   border-radius: 999px;
 }
+
+/* ボタン・アプリ名の英語併記 */
+.btn-en {
+  display: block;
+  font-size: 0.62rem;
+  font-weight: normal;
+  opacity: 0.75;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+}
+.app-en {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--text-light);
+  margin-top: 4px;
+  line-height: 1.3;
+}

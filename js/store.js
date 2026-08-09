@@ -68,13 +68,13 @@ function lessonNum(name) {
 
 // 新しい生徒さんに自動で付ける練習アプリ一覧
 const DEFAULT_APPS = [
-  { name: "⏰ 時間の練習", url: "https://natsuki1997m-hue.github.io/clock-practice/clock_practice.html" },
-  { name: "📅 カレンダー​クイズ", url: "https://natsuki1997m-hue.github.io/calendar/calendar_quiz.html" },
-  { name: "💰 おかねの練習", url: "https://natsuki1997m-hue.github.io/moneypractice/" },
-  { name: "🗺️ 道案内ゲーム", url: "https://natsuki1997m-hue.github.io/navigame/" },
-  { name: "✏️ げんき1漢字", url: "https://natsuki1997m-hue.github.io/kanji_practice1/" },
-  { name: "✏️ げんき2漢字", url: "https://natsuki1997m-hue.github.io/kanji_practice2/" },
-  { name: "🔄 活用マスター", url: "https://natsuki1997m-hue.github.io/conjugationmaster/" }
+  { name: "⏰ 時間の練習", nameEn: "Time Practice", url: "https://natsuki1997m-hue.github.io/clock-practice/clock_practice.html" },
+  { name: "📅 カレンダー​クイズ", nameEn: "Calendar Quiz", url: "https://natsuki1997m-hue.github.io/calendar/calendar_quiz.html" },
+  { name: "💰 おかねの練習", nameEn: "Money Practice", url: "https://natsuki1997m-hue.github.io/moneypractice/" },
+  { name: "🗺️ 道案内ゲーム", nameEn: "Directions Game", url: "https://natsuki1997m-hue.github.io/navigame/" },
+  { name: "✏️ げんき1漢字", nameEn: "Genki 1 Kanji", url: "https://natsuki1997m-hue.github.io/kanji_practice1/" },
+  { name: "✏️ げんき2漢字", nameEn: "Genki 2 Kanji", url: "https://natsuki1997m-hue.github.io/kanji_practice2/" },
+  { name: "🔄 活用マスター", nameEn: "Conjugation Master", url: "https://natsuki1997m-hue.github.io/conjugationmaster/" }
 ];
 
 window.Store = {

@@ -185,11 +185,11 @@
     if (!reviewDeck.length) {
       el.innerHTML = `
         <div class="card" style="text-align:center">
-          <h3 style="justify-content:center">🃏 フラッシュカードで復習！</h3>
-          <p style="font-size:0.9rem;color:var(--text-light);margin-bottom:16px">カードをタップすると意味が見られます</p>
+          <h3 style="justify-content:center">🃏 フラッシュカードで復習！ <span class="label-en">Flashcards</span></h3>
+          <p style="font-size:0.9rem;color:var(--text-light);margin-bottom:16px">カードをタップすると意味が見られます<br><span class="label-en">Tap a card to see the meaning</span></p>
           <div class="review-nav">
-            <button class="btn-ok" id="review-start-all">ぜんぶ復習</button>
-            <button class="btn-ng" id="review-start-unchecked">まだのことばだけ</button>
+            <button class="btn-ok" id="review-start-all">ぜんぶ復習<span class="btn-en">Review all</span></button>
+            <button class="btn-ng" id="review-start-unchecked">まだのことばだけ<span class="btn-en">Only new words</span></button>
           </div>
         </div>`;
       document.getElementById("review-start-all").addEventListener("click", () => startReview(false));
@@ -201,13 +201,13 @@
       <div class="vocab-stats" style="text-align:center">${reviewIndex + 1} / ${reviewDeck.length}</div>
       <div class="review-card" id="review-card">
         ${reviewFlipped
-          ? `<div class="big">${esc(v.meaning)}</div><div>💡 ${ruby(v.example || "")}</div><div class="hint">タップでもどる</div>`
-          : `<div class="big">${ruby(v.word)}</div><span class="pos pos-${esc(v.pos)}">${esc(v.pos)}</span><div class="hint">タップで意味を見る</div>`}
+          ? `<div class="big">${esc(v.meaning)}</div><div>💡 ${ruby(v.example || "")}</div><div class="hint">タップでもどる / Tap to go back</div>`
+          : `<div class="big">${ruby(v.word)}</div><span class="pos pos-${esc(v.pos)}">${esc(v.pos)}</span><div class="hint">タップで意味を見る / Tap to flip</div>`}
       </div>
       <div class="review-nav">
-        <button class="btn-ng" id="review-ng">🤔 まだ</button>
-        <button class="btn-neutral" id="review-quit">おわる</button>
-        <button class="btn-ok" id="review-ok">😊 おぼえた！</button>
+        <button class="btn-ng" id="review-ng">🤔 まだ<span class="btn-en">Not yet</span></button>
+        <button class="btn-neutral" id="review-quit">おわる<span class="btn-en">Done</span></button>
+        <button class="btn-ok" id="review-ok">😊 おぼえた！<span class="btn-en">Got it!</span></button>
       </div>`;
     document.getElementById("review-card").addEventListener("click", () => { reviewFlipped = !reviewFlipped; renderReview(); });
     document.getElementById("review-ok").addEventListener("click", () => {
@@ -236,9 +236,9 @@
       const el = document.getElementById("tab-review");
       el.innerHTML = `
         <div class="card" style="text-align:center">
-          <h3 style="justify-content:center">🎉 おつかれさまでした！</h3>
-          <p style="font-size:0.9rem;margin-bottom:16px">ぜんぶのカードをみました✨</p>
-          <div class="review-nav"><button class="btn-ok" id="review-again">もういちど</button></div>
+          <h3 style="justify-content:center">🎉 おつかれさまでした！ <span class="label-en">Great job!</span></h3>
+          <p style="font-size:0.9rem;margin-bottom:16px">ぜんぶのカードをみました✨<br><span class="label-en">You reviewed all the cards!</span></p>
+          <div class="review-nav"><button class="btn-ok" id="review-again">もういちど<span class="btn-en">One more time</span></button></div>
         </div>`;
       document.getElementById("review-again").addEventListener("click", () => { reviewDeck = []; renderReview(); });
       renderVocab();
@@ -322,7 +322,7 @@
     const apps = student.apps || [];
     el.innerHTML = apps.length
       ? `<div class="app-grid">${apps.map(a =>
-          `<a class="app-link" href="${esc(a.url)}" target="_blank" rel="noopener">${esc(a.name)}</a>`).join("")}</div>`
+          `<a class="app-link" href="${esc(a.url)}" target="_blank" rel="noopener">${esc(a.name)}${a.nameEn ? `<span class="app-en">${esc(a.nameEn)}</span>` : ""}</a>`).join("")}</div>`
       : '<div class="empty-note">アプリはまだありません</div>';
   }
 
