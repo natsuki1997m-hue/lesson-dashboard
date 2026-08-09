@@ -5,6 +5,13 @@
   function esc(s) {
     return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   }
+  // 「漢字（かんじ）」を漢字の上のふりがな表示に変換（表示専用。編集フォームは括弧のまま）
+  function ruby(s) {
+    return esc(s).replace(
+      /([一-鿿々ヶ〆]+)（([ぁ-んァ-ヶー]+)）/g,
+      "<ruby>$1<rt>$2</rt></ruby>"
+    );
+  }
   function fmtDate(d) {
     if (!d) return "";
     const [y, m, day] = d.split("-");
@@ -189,7 +196,7 @@
         <div class="list-row">
           <div class="grow">
             <div>📖 レッスン${esc(l.number)}回目 <span class="sub">${fmtDate(l.date)}</span></div>
-            <div class="sub">${esc((l.studied || "").slice(0, 40))}${(l.studied || "").length > 40 ? "…" : ""}</div>
+            <div class="sub">${ruby((l.studied || "").slice(0, 40))}${(l.studied || "").length > 40 ? "…" : ""}</div>
           </div>
           <button class="icon-btn" data-edit="${esc(l.id)}" title="編集">✏️</button>
           <button class="icon-btn" data-del="${esc(l.id)}" title="削除">🗑️</button>
@@ -263,10 +270,10 @@
       ${vocab.length ? vocab.map(v => `
         <div class="list-row vocab-admin-row">
           <div class="grow">
-            <span class="word">${esc(v.word)}</span>
+            <span class="word">${ruby(v.word)}</span>
             <span class="pos pos-${esc(v.pos)}">${esc(v.pos)}</span>
             <span class="sub"> ${esc(v.meaning)}</span>
-            <div class="sub">💡 ${esc(v.example || "")}</div>
+            <div class="sub">💡 ${ruby(v.example || "")}</div>
           </div>
           <button class="icon-btn" data-edit="${esc(v.id)}" title="編集">✏️</button>
           <button class="icon-btn" data-del="${esc(v.id)}" title="削除">🗑️</button>
@@ -306,7 +313,7 @@
           ${p.items.map((i, idx) => `
             <div class="prog-item ${i.done ? "done" : ""}">
               <input type="checkbox" data-kind="progress" data-lesson="${esc(p.lesson)}" data-idx="${idx}" ${i.done ? "checked" : ""}>
-              <span>${esc(i.text)}</span>
+              <span>${ruby(i.text)}</span>
               <span class="date">${esc(i.date || "")}</span>
             </div>`).join("")}
         </div>`).join("");
@@ -319,7 +326,7 @@
             <div class="prog-item ${i.done ? "done" : ""}">
               <input type="checkbox" data-kind="cando" data-lesson="${esc(c.lesson)}" data-idx="${idx}" ${i.done ? "checked" : ""}>
               <span class="part">${esc(i.part)}</span>
-              <span>${esc(i.text)}</span>
+              <span>${ruby(i.text)}</span>
             </div>`).join("")}
         </div>`).join("");
     }

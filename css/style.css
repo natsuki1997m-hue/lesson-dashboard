@@ -335,14 +335,25 @@ body {
 .hidden { display: none !important; }
 .empty-note { text-align: center; color: var(--text-light); font-size: 0.9rem; padding: 30px 0; }
 
-/* ふりがな（ルビ）：漢字の上に小さく表示 */
-ruby { ruby-position: over; }
+/* ふりがな（ルビ）：漢字の上に表示
+   ・rt は 0.62em（小さすぎず読める大きさ）
+   ・ルビを含む行は行間を広げて、上の行の文字とかぶらないようにする */
+ruby { ruby-position: over; ruby-align: center; }
 rt {
-  font-size: 0.55em;
-  color: var(--text-light);
-  letter-spacing: 0.05em;
+  font-size: 0.62em;
+  line-height: 1.1;
+  color: #9b8ab0;
+  letter-spacing: 0.04em;
+  font-weight: normal;
 }
-.vocab-item .word ruby rt, .review-card .big ruby rt { font-size: 0.5em; }
+/* ルビが乗る可能性のあるテキストブロックは行間に余裕を持たせる */
+.lesson-text, .lesson-section li, .example, .m-why, .mistake-row,
+.hw-text, .prog-item, .vocab-item .row1, .list-row, .sub {
+  line-height: 2.0;
+}
+/* 単語帳の見出し語・フラッシュカードは文字が大きいのでルビも少し大きく */
+.vocab-item .word { font-size: 1.05rem; }
+.vocab-item .word ruby rt, .review-card .big ruby rt { font-size: 0.55em; }
 
 /* 見出しの英語併記 */
 .label-en {
