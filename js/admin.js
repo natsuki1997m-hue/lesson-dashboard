@@ -115,7 +115,7 @@
 
   // ---- レッスン ----
   function lessonForm(lesson) {
-    const l = lesson || { date: new Date().toISOString().slice(0, 10), number: "", studied: "", points: [], newPhrases: [], goodPoints: [], reviewPoints: [], homework: [] };
+    const l = lesson || { date: new Date().toISOString().slice(0, 10), number: "", studied: "", points: [], newPhrases: [], goodPoints: [], reviewPoints: [], mistakes: [], homework: [] };
     const hwText = (l.homework || []).map(h => h.url ? `${h.text} | ${h.url}` : h.text).join("\n");
     openModal(`
       <h3>${lesson ? "📖 レッスンを編集" : "📖 新しいレッスン記録"}</h3>
@@ -126,6 +126,11 @@
       <div class="form-row"><label>💬 新しいフレーズ（1行に1つ）</label><textarea id="f-phrases" rows="2">${esc((l.newPhrases || []).join("\n"))}</textarea></div>
       <div class="form-row"><label>🌟 よかったところ（1行に1つ）</label><textarea id="f-good" rows="2">${esc((l.goodPoints || []).join("\n"))}</textarea></div>
       <div class="form-row"><label>🔁 もう一度チェック（1行に1つ）</label><textarea id="f-review" rows="2">${esc((l.reviewPoints || []).join("\n"))}</textarea></div>
+      <div class="form-row">
+        <label>✍️ ミス（1行に1つ：言った | 直した | 理由 | カテゴリ）</label>
+        <textarea id="f-mistakes" rows="3">${esc((l.mistakes || []).map(m => [m.said, m.corrected, m.why || "", m.category || ""].join(" | ")).join("\n"))}</textarea>
+        <div class="note">カテゴリは 助詞 / 活用 / 語彙 / 語順 / 発音 / その他</div>
+      </div>
       <div class="form-row">
         <label>📝 宿題（1行に1つ）</label>
         <textarea id="f-hw" rows="3">${esc(hwText)}</textarea>
@@ -156,6 +161,15 @@
         newPhrases: lines("f-phrases"),
         goodPoints: lines("f-good"),
         reviewPoints: lines("f-review"),
+        mistakes: lines("f-mistakes").map(line => {
+          const [said, corrected, why, category] = line.split("|").map(x => x.trim());
+          const m = { said: said || "", corrected: corrected || "" };
+          if (why) m.why = why;
+          if (category) m.category = category;
+          const old = (l.mistakes || []).find(o => o.said === m.said);
+          if (old && old.count) m.count = old.count;
+          return m;
+        }).filter(m => m.said && m.corrected),
         homework: hw
       };
       Store.saveLesson(saved);

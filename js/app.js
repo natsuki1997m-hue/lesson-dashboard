@@ -97,6 +97,23 @@
             <div class="label">🌟 よかったところ <span class="label-en">Good job!</span></div>
             <ul>${l.goodPoints.map(p => `<li class="good">${ruby(p)}</li>`).join("")}</ul>
           </div>` : ""}
+          ${l.mistakes && l.mistakes.length ? `
+          <div class="lesson-section">
+            <div class="label">✍️ なおしたところ <span class="label-en">Mistake details</span></div>
+            ${l.mistakes.map(m => `
+            <div class="mistake">
+              <div class="mistake-row">
+                <span class="m-said">${ruby(m.said)}</span>
+                <span class="m-arrow">→</span>
+                <span class="m-fixed">${ruby(m.corrected)}</span>
+              </div>
+              ${m.why ? `<div class="m-why">${ruby(m.why)}</div>` : ""}
+              <div class="m-meta">
+                ${m.category ? `<span class="m-cat">${esc(m.category)}</span>` : ""}
+                ${m.count && m.count > 1 ? `<span class="m-count">×${m.count} このミス${m.count}回目！</span>` : ""}
+              </div>
+            </div>`).join("")}
+          </div>` : ""}
           ${l.reviewPoints && l.reviewPoints.length ? `
           <div class="lesson-section">
             <div class="label">🔁 もう一度チェック <span class="label-en">Let's review</span></div>

@@ -49,9 +49,9 @@
   <div id="login-error" class="error"></div>
 </div>
 
-<script src="js/firebase-config.js?v=6"></script>
+<script src="js/firebase-config.js?v=7"></script>
 <script type="module">
-  await import("./js/store.js?v=6");
+  await import("./js/store.js?v=7");
   const gate = document.getElementById("login-gate");
   const container = document.querySelector(".container");
   container.classList.add("hidden");
@@ -62,7 +62,7 @@
       started = true;
       gate.classList.add("hidden");
       await Store.initForTeacher();
-      await import("./js/admin.js?v=6");
+      await import("./js/admin.js?v=7");
       container.classList.remove("hidden");
     } else if (!user) {
       gate.classList.remove("hidden");

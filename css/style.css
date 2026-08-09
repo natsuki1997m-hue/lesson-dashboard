@@ -416,3 +416,46 @@ rt {
   line-height: 1.7;
   font-size: 0.88rem;
 }
+
+/* ---- ミス表（なおしたところ） ---- */
+.mistake {
+  background: #fff8f8;
+  border: 1px solid #fce4ec;
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+.mistake-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 0.9rem;
+  line-height: 1.8;
+}
+.m-said { color: #c26a7a; text-decoration: line-through wavy #f3b3c0 1px; }
+.m-arrow { color: var(--text-light); }
+.m-fixed { color: #2e8b6e; font-weight: bold; }
+.m-why {
+  font-size: 0.8rem;
+  color: var(--text-light);
+  line-height: 1.7;
+  margin-top: 4px;
+  padding-left: 2px;
+}
+.m-meta { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+.m-cat {
+  font-size: 0.68rem;
+  background: var(--lavender);
+  color: var(--lavender-deep);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+.m-count {
+  font-size: 0.68rem;
+  background: #ffe3ea;
+  color: #d15a78;
+  font-weight: bold;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
