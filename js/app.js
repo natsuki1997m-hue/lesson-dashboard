@@ -21,7 +21,8 @@
     renderAll();
   }
   if (sessionStorage.getItem(authKey) === "ok") {
-    showMain();
+    // スクリプト全体の初期化が終わってから描画する（宣言前アクセスを防ぐ）
+    queueMicrotask(showMain);
   } else {
     gate.classList.remove("hidden");
     const input = document.getElementById("passcode-input");
