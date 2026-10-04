@@ -641,3 +641,83 @@ rt {
   font-size: 0.9rem;
   padding: 44px 0;
 }
+
+/* ---------- 文法ノート ---------- */
+.gp-pattern {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 16px;
+  background: #f7fbff;
+  border: 1px solid var(--sky);
+  border-radius: var(--radius-sm);
+}
+.gp-slot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  min-height: 42px;
+  padding: 6px 14px;
+  background: #fff;
+  border: 2px solid var(--sky-deep);
+  border-radius: 10px;
+  font-size: 0.82rem;
+  color: var(--sky-deep);
+  font-weight: 700;
+}
+.gp-fixed { font-size: 1.15rem; font-weight: 700; color: var(--text); }
+.gp-en { font-size: 0.84rem; color: var(--text-light); margin-top: 2px; }
+
+.gp-row {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 4px 10px;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--line);
+}
+.gp-no {
+  width: 26px; height: 26px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  background: var(--lavender);
+  color: var(--lavender-deep);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+.gp-line { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; }
+.gp-line .gp-fixed { font-size: 1rem; }
+input.gp-input {
+  flex: 1 1 140px;
+  min-width: 0;
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--text);
+  justify-content: flex-start;
+  outline: none;
+}
+input.gp-input::placeholder { color: #a9c6e6; font-weight: 500; font-size: 0.8rem; }
+input.gp-input:focus { box-shadow: 0 0 0 3px var(--sky); }
+.gp-fb {
+  grid-column: 2;
+  font-size: 0.85rem;
+  line-height: 1.7;
+  padding: 7px 12px;
+  border-radius: 10px;
+  background: var(--lemon);
+  color: var(--text-soft);
+}
+.gp-fb.ok { background: var(--mint); }
+.gp-fb-head { font-weight: 700; color: var(--text); }
+.gp-fb-badge { background: var(--lemon) !important; color: var(--lemon-deep) !important; }
+.gp-actions { display: flex; justify-content: flex-end; align-items: center; gap: 12px; margin-top: 14px; }
+.gp-actions button {
+  font-family: inherit; font-weight: 700;
+  padding: 10px 26px; border: none; border-radius: 999px;
+  cursor: pointer; box-shadow: var(--shadow); line-height: 1.3;
+}
+.gp-actions button:disabled { opacity: 0.6; }
+.gp-status { font-size: 0.8rem; color: var(--mint-deep); font-weight: 700; }
+.lesson-acc[data-tid] .lesson-acc-head { flex-wrap: wrap; }

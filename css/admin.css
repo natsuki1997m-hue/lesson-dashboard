@@ -142,3 +142,22 @@
 .ov-name { font-weight: bold; }
 .ov-warn { color: #d15a78; font-weight: bold; font-size: 0.78rem; }
 .cat-note { font-size: 0.78rem; color: var(--text-light); margin-top: 10px; }
+
+/* ---- 文法ノート（管理） ---- */
+.ga-assign { display: flex; align-items: center; gap: 10px; padding: 6px 0; font-size: 0.9rem; cursor: pointer; }
+.ga-row { padding: 12px 0; border-bottom: 1px dashed var(--line); }
+.ga-ans {
+  display: inline-block; padding: 4px 12px; border-radius: 8px;
+  background: #fff; border: 2px solid var(--sky-deep); font-weight: 700;
+}
+.ga-ans.empty { color: var(--text-light); border-style: dashed; font-weight: 500; }
+.ga-fb { display: flex; gap: 10px; align-items: center; margin-top: 8px; padding-left: 36px; }
+.ga-ok { white-space: nowrap; font-size: 0.82rem; color: var(--mint-deep); font-weight: 700; cursor: pointer; }
+.ga-text {
+  flex: 1; min-width: 0; font-family: inherit; font-size: 0.88rem;
+  padding: 7px 12px; border: 2px solid var(--lavender); border-radius: 10px; background: #fffdfa; outline: none;
+}
+.ga-text:focus { border-color: var(--lavender-deep); }
+@media (max-width: 520px) {
+  .ga-fb { flex-direction: column; align-items: stretch; padding-left: 0; }
+}

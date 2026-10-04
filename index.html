@@ -55,6 +55,7 @@
   <div class="tabs">
     <button class="tab active" data-tab="lessons">📖 クラスまとめ<span class="tab-en">Class Summary</span></button>
     <button class="tab" data-tab="vocab">📚 単語帳<span class="tab-en">Vocabulary</span></button>
+    <button class="tab" data-tab="grammar">✏️ 文法ノート<span class="tab-en">Grammar</span></button>
     <button class="tab" data-tab="review">🃏 復習<span class="tab-en">Flashcards</span></button>
     <button class="tab" data-tab="homework">📝 宿題<span class="tab-en">Homework</span></button>
     <button class="tab" data-tab="progress">🌱 進捗<span class="tab-en">Progress</span></button>
@@ -78,18 +79,19 @@
     <div class="vocab-stats" id="vocab-stats"></div>
     <div id="vocab-list"></div>
   </div>
+  <div id="tab-grammar" class="tab-content hidden"></div>
   <div id="tab-review" class="tab-content hidden"></div>
   <div id="tab-homework" class="tab-content hidden"></div>
   <div id="tab-progress" class="tab-content hidden"></div>
   <div id="tab-apps" class="tab-content hidden"></div>
 </div>
 
-<script src="js/firebase-config.js?v=13"></script>
+<script src="js/firebase-config.js?v=14"></script>
 <script type="module">
-  await import("./js/store.js?v=13");
+  await import("./js/store.js?v=14");
   const sid = new URLSearchParams(location.search).get("s") || "caspar-k7x2";
   await Store.initForStudent(sid);
-  await import("./js/app.js?v=13");
+  await import("./js/app.js?v=14");
 </script>
 </body>
 </html>

@@ -14,14 +14,14 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 
 // メモリ上のキャッシュ
-const cache = { students: {}, lessons: [], vocab: [], progress: [], cando: [] };
+const cache = { students: {}, lessons: [], vocab: [], progress: [], cando: [], templates: [], practice: [] };
 
 function docsOf(snap) { return snap.docs.map(d => ({ id: d.id, ...d.data() })); }
 
 // 先生用：全データ読み込み（要ログイン）
 async function initForTeacher() {
-  const [students, lessons, vocab, progress, cando] = await Promise.all(
-    ["students", "lessons", "vocab", "progress", "cando"].map(name => getDocs(collection(db, name)))
+  const [students, lessons, vocab, progress, cando, templates, practice] = await Promise.all(
+    ["students", "lessons", "vocab", "progress", "cando", "grammarTemplates", "practice"].map(name => getDocs(collection(db, name)))
   );
   cache.students = {};
   students.forEach(d => { cache.students[d.id] = { id: d.id, ...d.data() }; });
@@ -29,6 +29,8 @@ async function initForTeacher() {
   cache.vocab = docsOf(vocab);
   cache.progress = docsOf(progress);
   cache.cando = docsOf(cando);
+  cache.templates = docsOf(templates);
+  cache.practice = docsOf(practice);
 }
 
 // 生徒用：自分のぶんだけ読み込み
@@ -37,13 +39,17 @@ async function initForStudent(studentId) {
   cache.students = sSnap.exists() ? { [sSnap.id]: { id: sSnap.id, ...sSnap.data() } } : {};
   const byStudent = name =>
     getDocs(query(collection(db, name), where("studentId", "==", studentId)));
-  const [lessons, vocab, progress, cando] = await Promise.all(
-    ["lessons", "vocab", "progress", "cando"].map(byStudent)
+  const [lessons, vocab, progress, cando, practice] = await Promise.all(
+    ["lessons", "vocab", "progress", "cando", "practice"].map(byStudent)
   );
   cache.lessons = docsOf(lessons);
   cache.vocab = docsOf(vocab);
   cache.progress = docsOf(progress);
   cache.cando = docsOf(cando);
+  cache.practice = docsOf(practice);
+  const assigned = (cache.students[studentId] || {}).grammar || [];
+  const tSnaps = await Promise.all(assigned.map(id => getDoc(doc(db, "grammarTemplates", id))));
+  cache.templates = tSnaps.filter(d => d.exists()).map(d => ({ id: d.id, ...d.data() }));
 }
 
 // Firestore に書く（失敗したら画面に出す）
@@ -52,6 +58,14 @@ function push(col, id, data) {
   setDoc(doc(db, col, id), body).catch(e => {
     console.error("保存に失敗しました", col, id, e);
     alert("保存に失敗しました 🥲\n" + e.message);
+  });
+}
+// 指定した欄だけ書き換える（生徒さんの答えと先生の添削が上書きし合わないように）
+function merge(col, id, fields) {
+  return setDoc(doc(db, col, id), fields, { merge: true }).catch(e => {
+    console.error("保存に失敗しました", col, id, e);
+    alert("保存に失敗しました 🥲\n" + e.message);
+    throw e;
   });
 }
 function remove(col, id) {
@@ -197,5 +211,48 @@ window.Store = {
     if (!c || !c.items[itemIndex]) return;
     c.items[itemIndex].done = done;
     push("cando", c.id, c);
+  },
+
+  // ---- 文法ノート（型 ＋ 生徒さんの書き込み ＋ 添削） ----
+  listTemplates() {
+    return cache.templates.slice().sort((a, b) =>
+      String(a.lesson || "").localeCompare(String(b.lesson || ""), "ja", { numeric: true }));
+  },
+  getTemplate(id) { return cache.templates.find(t => t.id === id) || null; },
+  saveTemplate(t) {
+    if (!t.id) t.id = newId("grammarTemplates");
+    const i = cache.templates.findIndex(x => x.id === t.id);
+    if (i >= 0) cache.templates[i] = t; else cache.templates.push(t);
+    push("grammarTemplates", t.id, t);
+    return t;
+  },
+  deleteTemplate(id) {
+    cache.templates = cache.templates.filter(t => t.id !== id);
+    remove("grammarTemplates", id);
+  },
+  getPractice(studentId, templateId) {
+    return cache.practice.find(p => p.id === studentId + "_" + templateId)
+      || { id: studentId + "_" + templateId, studentId, templateId, answers: [], feedback: [] };
+  },
+  listPractice(studentId) { return cache.practice.filter(p => p.studentId === studentId); },
+  _upsertPractice(p) {
+    const i = cache.practice.findIndex(x => x.id === p.id);
+    if (i >= 0) cache.practice[i] = p; else cache.practice.push(p);
+  },
+  // answers: [{ s: ["箱1の答え", "箱2の答え"] }, ...]
+  saveAnswers(studentId, templateId, answers) {
+    const p = this.getPractice(studentId, templateId);
+    p.answers = answers;
+    p.updatedAt = new Date().toISOString();
+    this._upsertPractice(p);
+    return merge("practice", p.id, { studentId, templateId, answers, updatedAt: p.updatedAt });
+  },
+  // feedback: [{ text: "コメント", ok: true }, ...]
+  saveFeedback(studentId, templateId, feedback) {
+    const p = this.getPractice(studentId, templateId);
+    p.feedback = feedback;
+    p.feedbackAt = new Date().toISOString();
+    this._upsertPractice(p);
+    return merge("practice", p.id, { studentId, templateId, feedback, feedbackAt: p.feedbackAt });
   }
 };

@@ -401,6 +401,184 @@
     });
   }
 
+  // ---- 文法ノート ----
+  // 「[短形 / short form] と思います」→ [{type:"slot",label}, {type:"fixed",text}]
+  function parsePattern(src) {
+    return String(src).split(/(\[[^\]]*\])/).map(x => x.trim()).filter(Boolean).map(x =>
+      x.startsWith("[") ? { type: "slot", label: x.slice(1, -1).trim() } : { type: "fixed", text: x });
+  }
+  function patternToText(pattern) {
+    return (pattern || []).map(p => p.type === "slot" ? `[${p.label || ""}]` : p.text).join(" ");
+  }
+  function patternView(t, values) {
+    let i = 0;
+    return (t.pattern || []).map(p => {
+      if (p.type !== "slot") return `<span class="gp-fixed">${ruby(p.text)}</span>`;
+      const v = values ? values[i++] : null;
+      return values
+        ? `<span class="ga-ans ${v ? "" : "empty"}">${esc(v || "（空）")}</span>`
+        : `<span class="gp-slot">${esc(p.label)}</span>`;
+    }).join("");
+  }
+  const SAMPLE_8_3 = {
+    id: "genki-8-3", textbook: "げんき", lesson: "8-3", title: "〜と思います",
+    pattern: [{ type: "slot", label: "短形 / short form" }, { type: "fixed", text: "と思います" }],
+    explanation: {
+      ja: "自分の意見や予想を言うときに使います。「と思います」の前は、いつも短形（普通形）です。「〜じゃないと思います」のように、否定は前の部分に入れるのが自然です。",
+      en: "Use this to say what you think or guess. The part before と思います is always in short form. To say \"I don't think...\", put the negative in the short form part: 〜ないと思います."
+    },
+    slotHint: {
+      ja: "動詞（行く・行かない）、い形容詞（高い・高くない）、な形容詞＋だ（好きだ・好きじゃない）、名詞＋だ（学生だ・学生じゃない）",
+      en: "Verb (行く / 行かない), い-adjective (高い / 高くない), な-adjective + だ (好きだ / 好きじゃない), noun + だ (学生だ / 学生じゃない)"
+    },
+    examples: [
+      "明日（あした）は雨（あめ）が降（ふ）ると思います。",
+      "この映画（えいが）はおもしろいと思います。",
+      "たけしさんはメアリーさんが好きだと思います。",
+      "山下先生（やましたせんせい）は今日（きょう）来（こ）ないと思います。"
+    ],
+    count: 5
+  };
+
+  function templateForm(t) {
+    const x = t || { textbook: "げんき", lesson: "", title: "", pattern: [], explanation: {}, slotHint: {}, examples: [], count: 5 };
+    openModal(`
+      <h3>${t ? "✏️ 型を編集" : "✏️ 新しい型"}</h3>
+      <div class="form-row"><label>教科書</label><input id="g-book" value="${esc(x.textbook)}" placeholder="例：げんき"></div>
+      <div class="form-row"><label>レッスン</label><input id="g-lesson" value="${esc(x.lesson)}" placeholder="例：8-3"></div>
+      <div class="form-row"><label>タイトル</label><input id="g-title" value="${esc(x.title)}" placeholder="例：〜と思います"></div>
+      <div class="form-row">
+        <label>型</label>
+        <input id="g-pattern" value="${esc(patternToText(x.pattern))}" placeholder="[短形 / short form] と思います">
+        <div class="note">[ ] で囲んだところが生徒さんの書き込む箱になります。例：[Topic] は [Information] です</div>
+        <div class="gp-pattern" id="g-preview" style="margin-top:8px"></div>
+      </div>
+      <div class="form-row"><label>💡 いつ使う？（日本語）</label><textarea id="g-exp-ja" rows="3">${esc((x.explanation || {}).ja || "")}</textarea></div>
+      <div class="form-row"><label>💡 いつ使う？（英語）</label><textarea id="g-exp-en" rows="3">${esc((x.explanation || {}).en || "")}</textarea></div>
+      <div class="form-row"><label>📦 箱に入るもの（日本語）</label><textarea id="g-hint-ja" rows="2">${esc((x.slotHint || {}).ja || "")}</textarea></div>
+      <div class="form-row"><label>📦 箱に入るもの（英語）</label><textarea id="g-hint-en" rows="2">${esc((x.slotHint || {}).en || "")}</textarea></div>
+      <div class="form-row"><label>🗒️ 例文（1行に1つ。漢字（かんじ）でふりがな）</label><textarea id="g-examples" rows="4">${esc((x.examples || []).join("\n"))}</textarea></div>
+      <div class="form-row"><label>問題の数</label><input id="g-count" type="number" min="1" max="20" value="${esc(x.count || 5)}"></div>
+      <div class="form-actions">
+        <button class="mini-btn ghost" data-close>キャンセル</button>
+        <button class="mini-btn" id="g-save">保存する 💾</button>
+      </div>`);
+    const preview = () => {
+      document.getElementById("g-preview").innerHTML =
+        patternView({ pattern: parsePattern(document.getElementById("g-pattern").value) });
+    };
+    document.getElementById("g-pattern").addEventListener("input", preview);
+    preview();
+    document.getElementById("g-save").addEventListener("click", () => {
+      const pattern = parsePattern(document.getElementById("g-pattern").value);
+      if (!pattern.some(p => p.type === "slot")) { alert("型に [ ] の箱を1つ以上入れてください"); return; }
+      const v = id => document.getElementById(id).value.trim();
+      Store.saveTemplate({
+        id: t ? t.id : undefined,
+        textbook: v("g-book"), lesson: v("g-lesson"), title: v("g-title"), pattern,
+        explanation: { ja: v("g-exp-ja"), en: v("g-exp-en") },
+        slotHint: { ja: v("g-hint-ja"), en: v("g-hint-en") },
+        examples: v("g-examples").split("\n").map(s => s.trim()).filter(Boolean),
+        count: Math.min(20, Math.max(1, Number(v("g-count")) || 5))
+      });
+      closeModal();
+      renderGrammarAdmin();
+    });
+  }
+
+  function renderGrammarAdmin() {
+    const el = document.getElementById("tab-grammar");
+    const s = Store.getStudent(currentStudentId);
+    const templates = Store.listTemplates();
+    const assigned = (s && s.grammar) || [];
+    let html = "";
+
+    if (s) {
+      html += `
+      <div class="card">
+        <h3>🌷 ${esc(s.name)}さんの文法ノート</h3>
+        ${templates.length ? templates.map(t => `
+          <label class="ga-assign">
+            <input type="checkbox" data-assign="${esc(t.id)}" ${assigned.includes(t.id) ? "checked" : ""}>
+            <span>${esc(t.textbook)} ${esc(t.lesson)}　${ruby(t.title)}</span>
+          </label>`).join("") : '<p class="cat-note">まず下の「型の一覧」で型を作ってください</p>'}
+      </div>`;
+      html += templates.filter(t => assigned.includes(t.id)).map(t => {
+        const p = Store.getPractice(s.id, t.id);
+        const count = t.count || 5;
+        return `
+        <div class="card" data-tid="${esc(t.id)}">
+          <h3>✍️ ${esc(t.textbook)} ${esc(t.lesson)}　${ruby(t.title)}
+            ${p.updatedAt ? `<span class="badge">最終更新 ${fmtDate(p.updatedAt.slice(0, 10))}</span>` : '<span class="badge">まだ書き込みなし</span>'}</h3>
+          ${Array.from({ length: count }, (_, i) => {
+            const a = ((p.answers || [])[i] || {}).s || [];
+            const fb = (p.feedback || [])[i] || {};
+            return `
+            <div class="ga-row" data-row="${i}">
+              <div class="gp-line"><span class="gp-no">${i + 1}</span>${patternView(t, a.length ? a : [""])}</div>
+              <div class="ga-fb">
+                <label class="ga-ok"><input type="checkbox" class="ga-ok-input" ${fb.ok ? "checked" : ""}> ✓ いいね</label>
+                <input class="ga-text" value="${esc(fb.text || "")}" placeholder="コメント・直し（例：雨が降るだと → 雨が降ると）">
+              </div>
+            </div>`;
+          }).join("")}
+          <div class="form-actions"><span class="copy-ok ga-status"></span><button class="mini-btn ga-save">添削を保存 💾</button></div>
+        </div>`;
+      }).join("");
+    }
+
+    html += `
+      <div class="card">
+        <h3>📐 型の一覧 <span class="badge">${templates.length}件</span></h3>
+        ${templates.map(t => `
+          <div class="list-row">
+            <div class="grow">
+              <div>${esc(t.textbook)} ${esc(t.lesson)}　<b>${ruby(t.title)}</b></div>
+              <div class="sub">${esc(patternToText(t.pattern))}</div>
+            </div>
+            <button class="icon-btn" data-edit="${esc(t.id)}" title="編集">✏️</button>
+            <button class="icon-btn" data-del="${esc(t.id)}" title="削除">🗑️</button>
+          </div>`).join("")}
+        <div class="form-actions">
+          ${Store.getTemplate(SAMPLE_8_3.id) ? "" : '<button class="mini-btn ghost" id="g-sample">げんき8-3 のサンプルを入れる</button>'}
+          <button class="mini-btn" id="g-new">＋ 新しい型</button>
+        </div>
+      </div>`;
+    el.innerHTML = html;
+
+    el.querySelectorAll("[data-assign]").forEach(cb => cb.addEventListener("change", () => {
+      const set = new Set(s.grammar || []);
+      if (cb.checked) set.add(cb.dataset.assign); else set.delete(cb.dataset.assign);
+      s.grammar = [...set];
+      Store.saveStudent(s);
+      renderGrammarAdmin();
+    }));
+    el.querySelectorAll(".ga-save").forEach(btn => btn.addEventListener("click", async () => {
+      const card = btn.closest(".card");
+      const feedback = [...card.querySelectorAll(".ga-row")].map(row => ({
+        ok: row.querySelector(".ga-ok-input").checked,
+        text: row.querySelector(".ga-text").value.trim()
+      }));
+      try {
+        await Store.saveFeedback(s.id, card.dataset.tid, feedback);
+        card.querySelector(".ga-status").textContent = "保存しました ✅";
+      } catch {}
+    }));
+    el.querySelectorAll("[data-edit]").forEach(b => b.addEventListener("click", () => templateForm(Store.getTemplate(b.dataset.edit))));
+    el.querySelectorAll("[data-del]").forEach(b => b.addEventListener("click", () => {
+      const t = Store.getTemplate(b.dataset.del);
+      if (!confirm(`「${t.title}」の型を削除しますか？\n（生徒さんの書き込みは残ります）`)) return;
+      Store.deleteTemplate(t.id);
+      renderGrammarAdmin();
+    }));
+    document.getElementById("g-new").addEventListener("click", () => templateForm(null));
+    const sample = document.getElementById("g-sample");
+    if (sample) sample.addEventListener("click", () => {
+      Store.saveTemplate(JSON.parse(JSON.stringify(SAMPLE_8_3)));
+      renderGrammarAdmin();
+    });
+  }
+
   function renderAll() {
     renderOverview();
     renderStudentSelect();
@@ -408,6 +586,7 @@
     renderLessons();
     renderVocabAdmin();
     renderProgressAdmin();
+    renderGrammarAdmin();
   }
 
   renderAll();

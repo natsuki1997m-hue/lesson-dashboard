@@ -429,6 +429,108 @@
     el.innerHTML = html || '<div class="empty-note">まだ進捗データがありません 🌱</div>';
   }
 
+  // ---- 文法ノート（型の箱に書き込む → 先生が添削） ----
+  function patternHtml(t, values, editable) {
+    let slot = 0;
+    return (t.pattern || []).map(part => {
+      if (part.type !== "slot") return `<span class="gp-fixed">${ruby(part.text)}</span>`;
+      const i = slot++;
+      const v = values ? (values[i] || "") : "";
+      return editable
+        ? `<input class="gp-slot gp-input" data-slot="${i}" value="${esc(v)}" placeholder="${esc(part.label || "")}" autocomplete="off">`
+        : `<span class="gp-slot">${esc(part.label || "")}</span>`;
+    }).join("");
+  }
+  function renderGrammar() {
+    const el = document.getElementById("tab-grammar");
+    const templates = Store.listTemplates().filter(t => (student.grammar || []).includes(t.id));
+    if (!templates.length) {
+      el.innerHTML = '<div class="empty-note">まだ文法ノートはありません 🌱<br><span class="label-en">No grammar notes yet</span></div>';
+      return;
+    }
+    el.innerHTML = templates.map(t => {
+      const p = Store.getPractice(studentId, t.id);
+      const count = t.count || 5;
+      const filled = (p.answers || []).filter(a => (a.s || []).some(x => x.trim())).length;
+      const fbCount = (p.feedback || []).filter(f => f && (f.text || f.ok)).length;
+      return `
+      <div class="lesson-acc" data-tid="${esc(t.id)}">
+        <button class="lesson-acc-head" type="button">
+          <span class="acc-date">${esc(t.textbook || "")} ${esc(t.lesson || "")}</span>
+          <span class="acc-num">${ruby(t.title || "")}</span>
+          ${fbCount ? '<span class="acc-new gp-fb-badge">先生のコメントあり</span>' : ""}
+          <span class="badge">${filled}/${count}</span>
+          <span class="acc-arrow">▾</span>
+        </button>
+        <div class="lesson-acc-body hidden">
+          <div class="lesson-section">
+            <div class="label">📐 かた <span class="label-en">Pattern</span></div>
+            <div class="gp-pattern">${patternHtml(t)}</div>
+          </div>
+          ${t.explanation && (t.explanation.ja || t.explanation.en) ? `
+          <div class="lesson-section">
+            <div class="label">💡 いつ使う？ <span class="label-en">When to use it</span></div>
+            ${t.explanation.ja ? `<p class="lesson-text">${ruby(t.explanation.ja)}</p>` : ""}
+            ${t.explanation.en ? `<p class="lesson-text gp-en">${esc(t.explanation.en)}</p>` : ""}
+          </div>` : ""}
+          ${t.slotHint && (t.slotHint.ja || t.slotHint.en) ? `
+          <div class="lesson-section">
+            <div class="label">📦 箱に入るもの <span class="label-en">What goes in the box</span></div>
+            ${t.slotHint.ja ? `<p class="lesson-text">${ruby(t.slotHint.ja)}</p>` : ""}
+            ${t.slotHint.en ? `<p class="lesson-text gp-en">${esc(t.slotHint.en)}</p>` : ""}
+          </div>` : ""}
+          ${t.examples && t.examples.length ? `
+          <div class="lesson-section">
+            <div class="label">🗒️ 例文 <span class="label-en">Examples</span></div>
+            <ul>${t.examples.map(x => `<li>${ruby(x)}</li>`).join("")}</ul>
+          </div>` : ""}
+          <div class="lesson-section">
+            <div class="label">✏️ 自分で作ってみよう <span class="label-en">Make your own sentences</span></div>
+            ${Array.from({ length: count }, (_, i) => {
+              const fb = (p.feedback || [])[i];
+              return `
+              <div class="gp-row" data-row="${i}">
+                <span class="gp-no">${i + 1}</span>
+                <div class="gp-line">${patternHtml(t, ((p.answers || [])[i] || {}).s, true)}</div>
+                ${fb && (fb.text || fb.ok) ? `
+                <div class="gp-fb ${fb.ok ? "ok" : ""}">
+                  <span class="gp-fb-head">${fb.ok ? "✓ いいね" : "✍️ 先生から"}</span>${fb.text ? " " + ruby(fb.text) : ""}
+                </div>` : ""}
+              </div>`;
+            }).join("")}
+            <div class="gp-actions">
+              <span class="gp-status"></span>
+              <button class="btn-ok gp-save" type="button">保存する<span class="btn-en">Save</span></button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    }).join("");
+
+    el.querySelectorAll(".lesson-acc-head").forEach(head => {
+      head.addEventListener("click", () => {
+        head.parentElement.classList.toggle("open");
+        head.nextElementSibling.classList.toggle("hidden");
+      });
+    });
+    el.querySelectorAll(".gp-save").forEach(btn => btn.addEventListener("click", async () => {
+      const box = btn.closest(".lesson-acc");
+      const answers = [...box.querySelectorAll(".gp-row")].map(row =>
+        ({ s: [...row.querySelectorAll(".gp-input")].map(inp => inp.value.trim()) }));
+      const status = box.querySelector(".gp-status");
+      btn.disabled = true;
+      try {
+        await Store.saveAnswers(studentId, box.dataset.tid, answers);
+        status.textContent = "保存しました ✓ Saved";
+        box.querySelector(".badge").textContent =
+          `${answers.filter(a => a.s.some(x => x)).length}/${answers.length}`;
+      } catch {
+        status.textContent = "";
+      }
+      btn.disabled = false;
+    }));
+  }
+
   // ---- アプリリンク集 ----
   function renderApps() {
     const el = document.getElementById("tab-apps");
@@ -442,6 +544,7 @@
   function renderAll() {
     renderLessons();
     renderVocab();
+    renderGrammar();
     renderReview();
     renderHomework();
     renderProgress();
